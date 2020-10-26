@@ -1,0 +1,19 @@
+{
+    "common": {
+        "template_dir": "D:\\C_and_CPP_Libraries\\modern_cpp_tools\\new_cmake_templates",
+        "has_been_installed": false
+    },
+    "cmake": {
+        "exec": "cmake"
+    },
+    "vcpkg": {
+        "exec": "vcpkg",
+        "use_external": false,
+        "path": "D:\\C_and_CPP_Libraries\\modern_cpp_tools\\vcpkg",
+        "repo_uri": "https://github.com/microsoft/vcpkg.git",
+        "disable_metrics": true
+    },
+    "git": {
+        "exec": "git"
+    }
+}

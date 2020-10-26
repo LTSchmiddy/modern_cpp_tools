@@ -1,0 +1,17 @@
+{
+    "python.linting.enabled": false,
+    "python.languageServer": "Pylance",
+    "python.pythonPath": "d:\\C_and_CPP_Libraries\\modern_cpp_tools\\venv\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "./src/py/"
+    ],
+    "files.exclude": {
+        "**/.git": true,         // this is a default value
+        "**/__pycache__": true,         // this is a default value
+        // "vcpkg": true,    // this excludes the folder 
+        // "boost": true    // this excludes the folder 
+
+    },
+    "compile-hero.disable-compile-files-on-did-save-code": true
+
+}
