@@ -1,14 +1,31 @@
 from re import sub
-from typing import Union
+from typing import Dict, List, Tuple, Union
 
 import os, subprocess
+# from tools.vcpkg import package_list
+from tools.vcpkg.package_list import *
 
 from util import *
 from colors import *
 import settings
 from settings import get_exec_path
 
-from . import cmake_presets
+from tools import cmake_presets
+
+def ready_check():
+    if settings.current['vcpkg']['path'] is None or not os.path.isdir(settings.current['vcpkg']['path']):
+        print_error("FATAL ERROR: vcpkg path does not exist.")
+        print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
+        return False, ""
+
+    vcpkg_path = exec_path(os.path.join(settings.current['vcpkg']['path'], "vcpkg"))
+    if not os.path.isfile(vcpkg_path):
+        print_error(f"FATAL ERROR: '{vcpkg_path}' does not exist.")
+        print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
+        return False, ""
+
+    return True, vcpkg_path
+
 
 def install_vcpkg() -> Union[subprocess.CalledProcessError, int, None]:
     if \
@@ -67,3 +84,43 @@ def bootstrap_vcpkg():
     if settings.is_local_project:
         cmake_presets.update_project_toolchain_file()
     return result
+
+
+def parse_package_list(package_list: str) -> List[PackageList]:
+    pkg_dict: Dict[str, PackageList] = {}
+    
+    for line in package_list.split("\n"):
+        if line.strip() == "":
+            continue
+        triplet, package = parse_package_line(line)
+        
+        if triplet not in pkg_dict:
+            pkg_dict[triplet] = PackageList(triplet)
+            
+        pkg_dict[triplet].packages.append(package)
+    
+    retVal = []
+    for triplet, pkgs in pkg_dict.items():
+        retVal.append(pkgs)
+    return retVal
+        
+        
+def parse_package_line(line: str) -> Tuple[str, PackageEntry]:
+    # print (line)
+    name_end = line.index(":")
+    name, line = line[:name_end], line[name_end+1:]
+    
+    triplet_end = line.index(" ")
+    triplet, line = line[:triplet_end], line[triplet_end+1:].strip()
+    
+    version = None
+    
+    if " " in line:
+        version_end = line.index(" ")
+        version, line = line[:version_end], line[version_end+1:].strip()
+    else:
+        version = line
+    
+    print ("Found:", name, triplet, version)
+    
+    return triplet, PackageEntry(name, version)

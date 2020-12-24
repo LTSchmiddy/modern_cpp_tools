@@ -1,7 +1,7 @@
 from re import sub
 from typing import Union
 
-import sys, os, subprocess, argparse
+import sys, os, subprocess, argparse, json
 
 from util import *
 from colors import *
@@ -93,4 +93,83 @@ class AddTripletCommand(CommandBase):
         return None
 
 
-        # user_presets["configurePresets"].append(cmake_presets.make_user_preset("x64-windows", "debug"))
+class SavePackageListCommand(CommandBase):
+    cmd: str = "vcpkg-save-pkg-list"
+    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Saves a list of vcpkg the currently installed vcpkg packages."
+    )
+
+    def setup_args(self):
+        self.argparser.add_argument(
+            "-f",
+            "--filename",
+            default="vcpkg-lists.json"
+        )
+
+    def process(self, args: argparse.Namespace):
+        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
+        
+        if not vcpkg_ready:
+            return 1
+        
+        list_result = subprocess.check_output([vcpkg_path, "list"], cwd=settings.current['vcpkg']['path']).decode('ascii')
+        # print (list_result)
+        pkg_list = vcpkg.jsonize_lists(vcpkg.parse_package_list(list_result))
+        # print(pkg_list)
+        
+        outfile = open(args.filename, "w")
+        json.dump(pkg_list, outfile, indent=4, sort_keys=True)
+        outfile.close()
+
+        return None
+    
+class LoadPackageListCommand(CommandBase):
+    cmd: str = "vcpkg-load-pkg-list"
+    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Loads and installs vcpkg packages from a vcpkg-list.json file."
+    )
+
+    def setup_args(self):
+        self.argparser.add_argument(
+            "-f",
+            "--filename",
+            default="vcpkg-lists.json"
+        )
+        self.argparser.add_argument(
+            "-t",
+            "--triplets",
+            default="",
+            help="Sets the triplets to use for the installation of each list. "
+            "List of triplets should be separated with ':'. Blanks will install "
+            "default triplet for your system. Use '_original' for the original "
+            "triplet the list was gernerated with."
+        )
+
+
+    def process(self, args: argparse.Namespace):
+        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
+        
+        if not vcpkg_ready:
+            return 1
+        
+        triplet_list = args.triplets.split(":")
+        
+        infile = open(args.filename, "r")
+        pkg_list = vcpkg.dejsonize_lists(json.load(infile))
+        infile.close()
+
+        
+        for i in range(0, len(pkg_list)):
+            install_args = []
+            
+            if i >= len(triplet_list):
+                install_args = pkg_list[i].get_install_args()
+            else:
+                install_args = pkg_list[i].get_install_args(triplet_list[i])
+        
+            install_result = subprocess.run([vcpkg_path, "install"] + install_args, cwd=settings.current['vcpkg']['path'])
+            
+            if install_result.returncode != 0:
+                return install_result
+                
+        return None

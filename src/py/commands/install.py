@@ -78,17 +78,10 @@ class VcpkgCommand(CommandBase):
         pass
 
     def process(self, args: argparse.Namespace):
-        if settings.current['vcpkg']['path'] is None or not os.path.isdir(settings.current['vcpkg']['path']):
-            print_error("FATAL ERROR: vcpkg path does not exist.")
-            print("Vcpkg may not have been installed. Run `mcppt install` to fix.")
+        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
+        
+        if not vcpkg_ready:
             return 1
-
-        vcpkg_path = exec_path(os.path.join(settings.current['vcpkg']['path'], "vcpkg"))
-        if not os.path.isfile(vcpkg_path):
-            print_error(f"FATAL ERROR: '{vcpkg_path}' does not exist.")
-            print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
-            return 1
-
         
         params = sys.argv[2:]      
         
@@ -109,15 +102,9 @@ class UpdateVcpkgCommand(CommandBase):
         pass
 
     def process(self, args: argparse.Namespace):
-        if settings.current['vcpkg']['path'] is None or not os.path.isdir(settings.current['vcpkg']['path']):
-            print_error("FATAL ERROR: vcpkg path does not exist.")
-            print("Boost may not have been installed. Run `mcppt install` to fix.")
-            return 1
-
-        vcpkg_path = exec_path(os.path.join(settings.current['vcpkg']['path'], "vcpkg"))
-        if not os.path.isfile(vcpkg_path):
-            print_error(f"FATAL ERROR: '{vcpkg_path}' does not exist.")
-            print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
+        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
+        
+        if not vcpkg_ready:
             return 1
  
         

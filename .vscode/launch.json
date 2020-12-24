@@ -10,8 +10,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/py/mcppt.py",
             "console": "internalConsole",
-            "cwd": "${workspaceFolder}/proj",
-            "args": ["setup"]
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "vcpkg-load-pkg-list",
+                "-t=x64-windows:"
+            ]
         }
     ]
 }
