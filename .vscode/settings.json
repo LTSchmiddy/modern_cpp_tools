@@ -1,7 +1,6 @@
 {
     "python.linting.enabled": false,
     "python.languageServer": "Pylance",
-    "python.pythonPath": "d:\\C_and_CPP_Libraries\\modern_cpp_tools\\venv\\Scripts\\python.exe",
     "python.analysis.extraPaths": [
         "./src/py/"
     ],

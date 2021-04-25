@@ -39,7 +39,7 @@ class SetupProjectCommand(CommandBase):
         if is_local and not args.force:
                 return "This path is already a mpcct project."
             
-        # Save MCPPT Settings:
+        # Save MCT Settings:
         
         settings.local_settings_path = os.path.join(args.path, settings.local_file_name)
         settings.save_settings(settings.local_settings_path, settings.current)

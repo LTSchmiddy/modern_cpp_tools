@@ -9,7 +9,7 @@
     "vcpkg": {
         "exec": "vcpkg",
         "use_external": false,
-        "path": "D:\\C_and_CPP_Libraries\\modern_cpp_tools\\vcpkg",
+        "path": "D:\\git-repos\\modern_cpp_tools\\vcpkg",
         "repo_uri": "https://github.com/microsoft/vcpkg.git",
         "disable_metrics": true
     },

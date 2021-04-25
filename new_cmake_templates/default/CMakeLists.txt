@@ -7,6 +7,8 @@ set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
 
+include_directories(${TRIPLET_INCLUDE_DIRS}) 
+
 # If you're using Boost:
 # find_package(Boost 1.45.0 COMPONENTS filesystem) 
 # if(Boost_FOUND)

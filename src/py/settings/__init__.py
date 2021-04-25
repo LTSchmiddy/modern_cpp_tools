@@ -35,8 +35,8 @@ if is_source_version():
 # print(f"Is Build: {is_build_version()}")
 # print(f"Exec Dir: {exec_dir}")
 
-global_file_name = "global_mcppt_settings.json"
-local_file_name = "mcppt_settings.json"
+global_file_name = "global_mct_settings.json"
+local_file_name = "mct_settings.json"
 global_settings_path = get_global_exec_path(global_file_name)
 
 

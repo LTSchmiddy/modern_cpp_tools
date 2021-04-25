@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['src\\py\\mcppt.py'],
+a = Analysis(['src\\py\\mct.py'],
              pathex=['D:\\C_and_CPP_Libraries\\modern_cpp_tools'],
              binaries=[],
              datas=[
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='mcppt',
+          name='mct',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -36,4 +36,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='mcppt')
+               name='mct')

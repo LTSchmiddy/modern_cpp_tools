@@ -8,12 +8,12 @@
             "name": "Python: mcppt",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/py/mcppt.py",
+            "program": "${workspaceFolder}/src/py/mct.py",
             "console": "internalConsole",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/test",
             "args": [
-                "vcpkg-load-pkg-list",
-                "-t=x64-windows:"
+                "g",
+                "install-vcpkg"
             ]
         }
     ]

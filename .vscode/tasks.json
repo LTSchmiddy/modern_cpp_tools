@@ -6,7 +6,7 @@
         {
             "label": "Build - PyInstaller",
             "type": "shell",
-            "command": "python -c \"print('Starting Build...')\" && ${workspaceFolder}\\venv\\Scripts\\activate.bat && python -m PyInstaller --noconfirm ${workspaceFolder}/mcppt.spec",
+            "command": "python -c \"print('Starting Build...')\" && ${workspaceFolder}\\venv\\Scripts\\activate.bat && python -m PyInstaller --noconfirm ${workspaceFolder}/mct.spec",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

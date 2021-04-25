@@ -15,13 +15,13 @@ from tools import cmake_presets
 def ready_check():
     if settings.current['vcpkg']['path'] is None or not os.path.isdir(settings.current['vcpkg']['path']):
         print_error("FATAL ERROR: vcpkg path does not exist.")
-        print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
+        print("Vcpkg may not have been installed. Run `mct install-vcpkg` to fix.")
         return False, ""
 
     vcpkg_path = exec_path(os.path.join(settings.current['vcpkg']['path'], "vcpkg"))
     if not os.path.isfile(vcpkg_path):
         print_error(f"FATAL ERROR: '{vcpkg_path}' does not exist.")
-        print("Vcpkg may not have been installed. Run `mcppt install-vcpkg` to fix.")
+        print("Vcpkg may not have been installed. Run `mct install-vcpkg` to fix.")
         return False, ""
 
     return True, vcpkg_path
