@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "default-toolchain",
+            "inherits": [
+                "default"
+            ],
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "D:/git-repos/modern_cpp_tools/test/mct_user_toolchain.cmake"
+            }
+        }
+    ]
+}

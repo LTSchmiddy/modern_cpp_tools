@@ -2,6 +2,8 @@ import sys
 import os
 import json
 from colors import *
+
+from util import anon_func
 from .paths import *
 
 exec_dir, exec_file = os.path.split(os.path.abspath(sys.argv[0]))
@@ -35,9 +37,10 @@ if is_source_version():
 # print(f"Is Build: {is_build_version()}")
 # print(f"Exec Dir: {exec_dir}")
 
-global_file_name = "global_mct_settings.json"
-local_file_name = "mct_settings.json"
+global_file_name = "global_mct_user_settings.json"
+local_file_name = "mct_user_settings.json"
 global_settings_path = get_global_exec_path(global_file_name)
+forced_global_mode = False
 
 
 def local_project_check(start_path = os.getcwd().replace('\\', '/')) -> Union[tuple, None]:
@@ -68,7 +71,6 @@ def default_settings():
     return {
         "common": {
             "template_dir":  get_global_exec_path("new_cmake_templates"),
-            "has_been_installed": False
             # "additional_template_dirs": []
         },
         "cmake": {
@@ -79,7 +81,8 @@ def default_settings():
             "use_external": False,
             "path": None,
             "repo_uri": "https://github.com/microsoft/vcpkg.git",
-            "disable_metrics": True
+            "disable_metrics": True,
+            "has_been_installed": False,
         },
         "git": {
             "exec": "git"
@@ -128,7 +131,7 @@ def load_settings(path: str = global_settings_path, settings_dict: dict = curren
         main.update(new_update_dict)
 
     # load preexistent settings file
-    if os.path.exists(global_settings_path) and os.path.isfile(global_settings_path):
+    if os.path.exists(path) and os.path.isfile(path):
         try:
             imported_settings = json.load(open(path, "r"))
             # current.update(imported_settings)
@@ -139,12 +142,11 @@ def load_settings(path: str = global_settings_path, settings_dict: dict = curren
 
     # settings file not found
     else:
-        save_settings()
+        save_settings(path, settings_dict)
 
 
 def save_settings(path: str = global_settings_path, settings_dict: dict = current):
     outfile = open(path, "w")
     json.dump(settings_dict, outfile, indent=4)
     outfile.close()
-
 

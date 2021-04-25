@@ -4,12 +4,14 @@ from colors import *
 from util import *
 
 import settings
+import project
 import commands
 
 
 def init_settings(force_global=False):
     if force_global:
         settings.is_local_project = False
+        settings.forced_global_mode = True
     else:
         settings.update_local_status()
 
@@ -17,6 +19,8 @@ def init_settings(force_global=False):
     if settings.is_local_project:
         settings.load_settings(settings.global_settings_path, settings.current)
         settings.load_settings(settings.local_settings_path, settings.current)
+        
+        project.attempt_load_local_project()
     else:
         settings.load_settings(settings.global_settings_path, settings.current)
 

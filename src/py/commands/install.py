@@ -1,7 +1,7 @@
 from re import sub
 from typing import Union
 
-import sys, os, subprocess, argparse
+import sys, os, subprocess, argparse, shutil
 
 from util import *
 from colors import *
@@ -23,7 +23,7 @@ class InstallVcpkgCommand(CommandBase):
         pass
 
     def process(self, args: argparse.Namespace):
-        if settings.current["common"]["has_been_installed"]:
+        if "has_been_installed" in settings.current["vcpkg"] and settings.current["vcpkg"]["has_been_installed"]:
             print_warning(
                 "WARNING: Apparently, installation has been run before. Installation might behave unpredictably..."
             )
@@ -43,6 +43,7 @@ class InstallVcpkgCommand(CommandBase):
 
             if os.path.isdir(get_exec_path("vcpkg")):
                 print_color("green", "Successfully installed vcpkg")
+                settings.current["vcpkg"]["has_been_installed"] = True
             else:
                 return "FATAL ERROR: vcpkg failed to install"
 
@@ -95,7 +96,7 @@ class VcpkgCommand(CommandBase):
 class UpdateVcpkgCommand(CommandBase):
     cmd: str = "update-vcpkg"
     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Updates the vcpkg system."
+        description="Updates the vcpkg instance."
     )
 
     def setup_args(self):
@@ -118,3 +119,17 @@ class UpdateVcpkgCommand(CommandBase):
             return bootstrap_result
         
         return None
+    
+# class DeleteVcpkgCommand(CommandBase):
+#     cmd: str = "delete-vcpkg"
+#     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
+#         description="Deletes any local vcpkg instance folder and switches back to using the global instance."
+#     )
+
+#     def setup_args(self):
+#         pass
+
+#     def process(self, args: argparse.Namespace):
+#         if settings.current["vcpkg"]["path"] == settings.s_globals["vcpkg"]["path"] and not settings.forced_global_mode:
+#             print_error("FATAL ERROR: Vcpkg instance to be deleted was MCT's global instance.")
+#             print_error("As a safety measure, you must specify global mode by running 'mct g delete-vcpkg'")

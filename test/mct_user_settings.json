@@ -1,7 +1,6 @@
 {
     "common": {
-        "template_dir": "D:\\C_and_CPP_Libraries\\modern_cpp_tools\\new_cmake_templates",
-        "has_been_installed": false
+        "template_dir": "D:\\git-repos\\modern_cpp_tools\\new_cmake_templates"
     },
     "cmake": {
         "exec": "cmake"
@@ -9,9 +8,10 @@
     "vcpkg": {
         "exec": "vcpkg",
         "use_external": false,
-        "path": "D:\\git-repos\\modern_cpp_tools\\vcpkg",
+        "path": "D:/git-repos/modern_cpp_tools/test\\vcpkg",
         "repo_uri": "https://github.com/microsoft/vcpkg.git",
-        "disable_metrics": true
+        "disable_metrics": true,
+        "has_been_installed": true
     },
     "git": {
         "exec": "git"

@@ -5,6 +5,7 @@ import sys, os, subprocess, argparse, json
 
 from util import *
 from colors import *
+import project
 import settings
 from settings import get_exec_path, get_exec_path_fslashed
 
@@ -16,7 +17,7 @@ from commands import CommandBase
 class SetupProjectCommand(CommandBase):
     cmd: str = "setup"
     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Setup a MCCPT project for local usage."
+        description="Setup a MCT project for local usage."
     )
 
     def setup_args(self):
@@ -37,7 +38,7 @@ class SetupProjectCommand(CommandBase):
 
         is_local, l_path, l_set = settings.local_project_check(args.path)
         if is_local and not args.force:
-                return "This path is already a mpcct project."
+                return "This path is already a mct project."
             
         # Save MCT Settings:
         
@@ -46,6 +47,7 @@ class SetupProjectCommand(CommandBase):
         settings.project_dir = args.path
         settings.is_local_project = True
 
+        project.attempt_load_local_project()
         # settings.update_local_status(args.path) # Should be considered a local project from here on...
 
         # cmake_presets.update_project_toolchain_file()

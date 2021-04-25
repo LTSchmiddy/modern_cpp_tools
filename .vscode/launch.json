@@ -12,7 +12,8 @@
             "console": "internalConsole",
             "cwd": "${workspaceFolder}/test",
             "args": [
-                "g",
+                // "setup",
+                // "g",
                 "install-vcpkg"
             ]
         }
