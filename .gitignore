@@ -1,15 +1,13 @@
 # Directories
-/venv/*
-/vcpkg/*
-/boost/*
-/build/*
-/dist/*
-/old/*
+/venv/
+/vcpkg/
+/boost/
+/build/
+/dist/
+/old/
 /proj/*
 __pycache__/*
 
 # File Types
 *.pyc
 
-/old/
-/test/

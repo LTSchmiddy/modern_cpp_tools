@@ -12,17 +12,9 @@ current = None
 
 def default_project():
     return {
-        "packages": [],
-        "custom_user_toolchain_values": {},
+        "packages": {},
+        "required_user_toolchain_values": [],
         "shared_toolchain_files": []
-    }
-
-def custom_user_toolchain_value_example():
-    return {
-        "EXAMPLE": {
-            "desc": "description",
-            "default": "default_value"
-        }
     }
 
 def load_project_file(filePath: str):
@@ -34,6 +26,11 @@ def load_project_file(filePath: str):
     # if len(current['custom_user_toolchain_values'].keys()) <= 0:
         # current['custom_user_toolchain_values'] = custom_user_toolchain_value_example()
 
+def save_project_file(filePath: str):
+    global current
+    settings.save_settings(filePath, current)
+    
+
 def attempt_load_local_project():
     if not settings.is_local_project:
         print_warning("!!! If you see this message, you've encountered a bug of some sort.") 
@@ -44,3 +41,14 @@ def attempt_load_local_project():
 
     load_project_file(project_file_path())
     print("Project info loaded.")
+    
+def attempt_save_local_project():
+    if not settings.is_local_project:
+        print_warning("!!! If you see this message, you've encountered a bug of some sort.") 
+        print_warning("The function 'attempt_save_local_project()' is being called in global mode, which obviously should not happen.")
+        print_warning("Since we're not running as local project, there's no project info to save.")
+        return
+
+
+    load_project_file(project_file_path())
+    print("Project info saved.")

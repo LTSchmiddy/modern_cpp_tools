@@ -14,7 +14,12 @@
             "args": [
                 // "setup",
                 // "g",
-                "install-vcpkg"
+                // "install-vcpkg"
+                // "update-toolchain"
+                // "save-pkg-list"
+                "install-packages",
+                "-g",
+                "main"
             ]
         }
     ]

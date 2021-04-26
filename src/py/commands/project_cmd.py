@@ -14,6 +14,7 @@ from tools import vcpkg, cmake_presets
 from commands import CommandBase
 
 
+
 class SetupProjectCommand(CommandBase):
     cmd: str = "setup"
     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
@@ -43,15 +44,30 @@ class SetupProjectCommand(CommandBase):
         # Save MCT Settings:
         
         settings.local_settings_path = os.path.join(args.path, settings.local_file_name)
-        settings.save_settings(settings.local_settings_path, settings.current)
         settings.project_dir = args.path
         settings.is_local_project = True
 
         project.attempt_load_local_project()
+        # cmake_presets.construct_user_toolchain_values(False)
         # settings.update_local_status(args.path) # Should be considered a local project from here on...
-
+        
+        vcpkg.construct_package_group_triplets()
+        
+        if len(project.current['required_user_toolchain_values']) > 0:
+            print_color(
+                cmake_presets.toolchain_message_color, "This project requires the following user toolchain values:"
+            )
+            for i in project.current['required_user_toolchain_values']:
+                print_color(
+                    cmake_presets.toolchain_message_color, f"\t- {i}"
+                )
+            print_color(
+                cmake_presets.toolchain_message_color, f"You'll need to set them in {settings.local_settings_path}."
+            )
+            
+        settings.save_settings(settings.local_settings_path, settings.current)
         # cmake_presets.update_project_toolchain_file()
-        cmake_presets.update_project_toolchain_file(root_dir=args.path)
+        cmake_presets.update_user_toolchain_file(root_dir=args.path, verbose=False)
 
         # Handle CMakePresets.json. Do nothing if file is already present.
         cmake_presets_path = os.path.join(args.path, "CMakePresets.json")
@@ -64,6 +80,25 @@ class SetupProjectCommand(CommandBase):
         user_presets = cmake_presets.make_user_preset_file(cmake_presets.get_custom_toolchain_path(args.path))
 
         settings.save_settings(cmake_user_presets_path, user_presets)
+
+class UpdateToolchainCommand(CommandBase):
+    cmd: str = "update-toolchain"
+    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Sets the CMake toolchain to the current vcpkg instance."
+    )
+
+    def setup_args(self):
+        pass
+
+    def process(self, args: argparse.Namespace):
+        if settings.is_local_project:
+            cmake_presets.update_user_toolchain_file()
+        
+        vcpkg.update_user_presets_toolchain()
+        
+        settings.save_settings(settings.local_settings_path, settings.current)
+
+        return None
 
 
 class AddTripletCommand(CommandBase):
@@ -92,86 +127,4 @@ class AddTripletCommand(CommandBase):
         else:
             return "CMake Project not found."
         
-        return None
-
-
-class SavePackageListCommand(CommandBase):
-    cmd: str = "vcpkg-save-pkg-list"
-    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Saves a list of vcpkg the currently installed vcpkg packages."
-    )
-
-    def setup_args(self):
-        self.argparser.add_argument(
-            "-f",
-            "--filename",
-            default="vcpkg-lists.json"
-        )
-
-    def process(self, args: argparse.Namespace):
-        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
-        
-        if not vcpkg_ready:
-            return 1
-        
-        list_result = subprocess.check_output([vcpkg_path, "list"], cwd=settings.current['vcpkg']['path']).decode('ascii')
-        # print (list_result)
-        pkg_list = vcpkg.jsonize_lists(vcpkg.parse_package_list(list_result))
-        # print(pkg_list)
-        
-        outfile = open(args.filename, "w")
-        json.dump(pkg_list, outfile, indent=4, sort_keys=True)
-        outfile.close()
-
-        return None
-    
-class LoadPackageListCommand(CommandBase):
-    cmd: str = "vcpkg-load-pkg-list"
-    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Loads and installs vcpkg packages from a vcpkg-list.json file."
-    )
-
-    def setup_args(self):
-        self.argparser.add_argument(
-            "-f",
-            "--filename",
-            default="vcpkg-lists.json"
-        )
-        self.argparser.add_argument(
-            "-t",
-            "--triplets",
-            default="",
-            help="Sets the triplets to use for the installation of each list. "
-            "List of triplets should be separated with ':'. Blanks will install "
-            "default triplet for your system. Use '_original' for the original "
-            "triplet the list was gernerated with."
-        )
-
-
-    def process(self, args: argparse.Namespace):
-        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
-        
-        if not vcpkg_ready:
-            return 1
-        
-        triplet_list = args.triplets.split(":")
-        
-        infile = open(args.filename, "r")
-        pkg_list = vcpkg.dejsonize_lists(json.load(infile))
-        infile.close()
-
-        
-        for i in range(0, len(pkg_list)):
-            install_args = []
-            
-            if i >= len(triplet_list):
-                install_args = pkg_list[i].get_install_args()
-            else:
-                install_args = pkg_list[i].get_install_args(triplet_list[i])
-        
-            install_result = subprocess.run([vcpkg_path, "install"] + install_args, cwd=settings.current['vcpkg']['path'])
-            
-            if install_result.returncode != 0:
-                return install_result
-                
         return None

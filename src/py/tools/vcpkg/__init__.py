@@ -7,6 +7,7 @@ from tools.vcpkg.package_list import *
 
 from util import *
 from colors import *
+import project
 import settings
 from settings import get_exec_path
 
@@ -27,6 +28,15 @@ def ready_check():
     return True, vcpkg_path
 
 
+def update_user_presets_toolchain():
+    user_presets_path = get_exec_path("CMakeUserPresets.json")
+    if settings.is_local_project and os.path.isfile(user_presets_path):
+        user_presets = {}
+        settings.load_settings(user_presets_path, user_presets)
+        cmake_presets.set_toolchain_file(user_presets)
+        settings.save_settings(user_presets_path, user_presets)
+
+
 def install_vcpkg() -> Union[subprocess.CalledProcessError, int, None]:
     if \
     settings.current["vcpkg"]["path"] is not None \
@@ -37,7 +47,7 @@ def install_vcpkg() -> Union[subprocess.CalledProcessError, int, None]:
         print_warning("Skipping...")
 
         if settings.is_local_project:
-            cmake_presets.update_project_toolchain_file()
+            cmake_presets.update_user_toolchain_file()
 
         return None
 
@@ -58,12 +68,7 @@ def install_vcpkg() -> Union[subprocess.CalledProcessError, int, None]:
     if bootstrap_result.returncode != 0:
         return bootstrap_result
 
-    user_presets_path = get_exec_path("CMakeUserPresets.json")
-    if settings.is_local_project and os.path.isfile(user_presets_path):
-        user_presets = {}
-        settings.load_settings(user_presets_path, user_presets)
-        cmake_presets.set_toolchain_file(user_presets)
-        settings.save_settings(user_presets_path, user_presets)
+    update_user_presets_toolchain()
 
     return None
 
@@ -82,7 +87,7 @@ def bootstrap_vcpkg():
 
     result = subprocess.run(bootstrap_cmd, cwd=settings.current["vcpkg"]["path"])
     if settings.is_local_project:
-        cmake_presets.update_project_toolchain_file()
+        cmake_presets.update_user_toolchain_file()
     return result
 
 
@@ -124,3 +129,15 @@ def parse_package_line(line: str) -> Tuple[str, PackageEntry]:
     print ("Found:", name, triplet, version)
     
     return triplet, PackageEntry(name, version)
+
+def construct_package_group_triplets():
+    if not settings.is_local_project:
+        print_warning("!!! If you see this message, you've encountered a bug of some sort.") 
+        print_warning("The function 'construct_package_group_triplets()' is being called in global mode, which should not happen.")
+        return
+    
+    
+    pkgs: dict = project.current['packages']
+    for i in pkgs.keys():
+        if not i in settings.current['vcpkg']['package-group-triplets']:
+            settings.current['vcpkg']['package-group-triplets'][i] = ""

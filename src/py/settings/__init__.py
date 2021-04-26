@@ -83,9 +83,15 @@ def default_settings():
             "repo_uri": "https://github.com/microsoft/vcpkg.git",
             "disable_metrics": True,
             "has_been_installed": False,
+            "package-group-triplets": {}
         },
         "git": {
             "exec": "git"
+        },
+        "toolchain": {
+            "use_global": False,
+            "use_local": True,
+            "user_toolchain_values": {}
         }
 
     }

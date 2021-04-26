@@ -59,7 +59,7 @@ if __name__ == "__main__":
         print_warning("WARNING: global vcpkg installation unset.")
         print_warning(
             f"Before you can use MCT properly, you must run either 'mct g install-vcpkg' to install a global "\
-                "vcpkg instance, or set the path to one manually in '{settings.global_settings_path}'."
+                f"vcpkg instance, or set the path to one manually in '{settings.global_settings_path}'."
         )
         print_warning(
             "If that is what you're currently trying to do, then you may disregard this message."
