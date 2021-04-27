@@ -64,7 +64,9 @@ class SetupProjectCommand(CommandBase):
             print_color(
                 cmake_presets.toolchain_message_color, f"You'll need to set them in {settings.local_settings_path}."
             )
-            
+        
+        settings.current['vcpkg']['has_been_installed'] = False
+        
         settings.save_settings(settings.local_settings_path, settings.current)
         # cmake_presets.update_project_toolchain_file()
         cmake_presets.update_user_toolchain_file(root_dir=args.path, verbose=False)
@@ -121,7 +123,7 @@ class AddTripletCommand(CommandBase):
             user_presets = {}
             settings.load_settings(user_presets_path, user_presets)
 
-            cmake_presets.add_triplet(user_presets, args.triplet, args.config)
+            cmake_presets.add_user_triplet(user_presets, args.triplet, args.config)
 
             settings.save_settings(user_presets_path, user_presets)
         else:

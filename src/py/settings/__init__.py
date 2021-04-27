@@ -91,7 +91,8 @@ def default_settings():
         "toolchain": {
             "use_global": False,
             "use_local": True,
-            "user_toolchain_values": {}
+            "user_toolchain_values": {},
+            "private_toolchain_files": []
         }
 
     }
