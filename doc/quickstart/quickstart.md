@@ -41,7 +41,7 @@ MCT provides an easy way to use these different VCPKG instances, without having 
 
 ## VCPKG Triplet Presets
 
-Before CMake can use any of the packages that VCPKG provides, you'll need to specify the triplet that VCPKG built your packages with. Use the `mct add-triplet [-c=CONFIG_TYPE] TRIPLET ` command to automatically generate a CMake preset in `CMakeUserPresets.json` for the triplet `TRIPLET`. Additionally, the optional `c` flag can be used to set the configuration type (Debug, Release, etc.) of the preset.
+Before CMake can use any of the packages that VCPKG provides, you'll need to specify the triplet that VCPKG built your packages with. Use the `mct add-triplet [-c=CONFIG_TYPE] TRIPLET` command to automatically generate a CMake preset in `CMakeUserPresets.json` for the triplet `TRIPLET`. Additionally, the optional `c` flag can be used to set the configuration type (Debug, Release, etc.) of the preset.
 
 Each preset will automatically be assigned it's own build folder in the `build` subdirectory (which will be created if it does not already exist).
 
