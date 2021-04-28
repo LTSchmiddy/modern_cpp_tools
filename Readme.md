@@ -27,4 +27,6 @@ If using a packaged release version, just extract to a folder and add that folde
 
 ## Usage
 
+* [Quickstart Guide](doc/quickstart/quickstart.md)
+
 See the documentation folder.

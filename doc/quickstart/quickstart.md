@@ -1,4 +1,4 @@
-# Initial Setup
+# Quickstart Guide
 
 The `mct setup` command is used to create new projects, and to setup pre-existing ones for local work.
 
