@@ -178,13 +178,19 @@ class InstallProjectPackagesCommand(CommandBase):
         # Performing installations:
         for group, triplet in group_info.items():
             print_color(cmake_presets.toolchain_message_color, f"=== Installing group '{group}'", end="")
+            
             if triplet != "":
                 print_color(cmake_presets.toolchain_message_color, f" (Triplet: {triplet})", end="")
             print_color(cmake_presets.toolchain_message_color, " ===")
+
             
             for pkg in project.current['packages'][group]:
+                pkg_request = pkg
+                if triplet != "":
+                    pkg_request = f"{pkg}:{triplet}"
+                
                 print_color(cmake_presets.toolchain_message_color, f"--> installing {pkg}")
-                install_result = subprocess.run([vcpkg_path, "install", "--recurse", f"{pkg}:{triplet}"], cwd=settings.current['vcpkg']['path'])
+                install_result = subprocess.run([vcpkg_path, "install", "--recurse", pkg_request], cwd=settings.current['vcpkg']['path'])
                 
                 if install_result.returncode != 0:
                     return install_result

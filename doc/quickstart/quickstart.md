@@ -2,7 +2,7 @@
 
 The `mct setup` command is used to create new projects, and to setup pre-existing ones for local work.
 
-## Starting a new project with MCT:
+## Starting a new project with MCT
 
 When the `mct setup` command is used, it will generate several files.
 
