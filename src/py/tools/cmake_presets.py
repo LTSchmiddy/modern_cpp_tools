@@ -217,8 +217,11 @@ def build_user_toolchain(path: str = None, verbose=True) -> str:
     construct_user_toolchain_values(verbose)
     for key, value in settings.current["toolchain"]["user_toolchain_values"].items():
         if value is not None:
-            retVal += f"set({key} {value})\n"
-
+            if isinstance(value, str):
+                retVal += f"set({key} \"{value}\")\n"
+            else:
+                retVal += f"set({key} {value})\n"
+                
     retVal += "\n# Project Shared Includes:\n"
     for i in project.current["shared_toolchain_files"]:
         retVal += f"include({settings.get_exec_path_fslashed(i)})\n"
