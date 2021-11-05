@@ -225,11 +225,13 @@ def build_user_toolchain(path: str = None, verbose=True) -> str:
                 
     retVal += "\n# Project Shared Includes:\n"
     for i in project.current["shared_toolchain_files"]:
-        retVal += f"include(\"{Path(i).resolve().absolute()}\")\n"
+        path_str = str(Path(i).resolve().absolute()).replace("\\", "\\\\")
+        retVal += f"include(\"{path_str}\")\n"
 
     retVal += "\n# Private Includes:\n"
     for i in settings.current["toolchain"]["private_toolchain_files"]:
-        retVal += f"include(\"{Path(i).resolve().absolute()}\")\n"
+        path_str = str(Path(i).resolve().absolute()).replace("\\", "\\\\")
+        retVal += f"include(\"{path_str}\")\n"
 
     return path, retVal
 
