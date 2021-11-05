@@ -1,5 +1,6 @@
 import os, textwrap, sys
 
+from pathlib import Path
 from typing import Union
 import settings
 import project
@@ -224,11 +225,11 @@ def build_user_toolchain(path: str = None, verbose=True) -> str:
                 
     retVal += "\n# Project Shared Includes:\n"
     for i in project.current["shared_toolchain_files"]:
-        retVal += f"include({settings.get_exec_path_fslashed(i)})\n"
+        retVal += f"include(\"{Path(i).resolve().absolute()}\")\n"
 
     retVal += "\n# Private Includes:\n"
     for i in settings.current["toolchain"]["private_toolchain_files"]:
-        retVal += f"include({settings.get_exec_path_fslashed(i)})\n"
+        retVal += f"include(\"{Path(i).resolve().absolute()}\")\n"
 
     return path, retVal
 
