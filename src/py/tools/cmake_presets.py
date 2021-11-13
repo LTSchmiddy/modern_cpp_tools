@@ -117,53 +117,67 @@ def set_toolchain_file(
 def make_user_config_preset(
     name: str,
     triplet: str = "",
-    config: str = "",
+    build_type: str = "",
+    append_inherits: list[str] = [],
+    *,
     inherits: list[str] = [mct_default_user_preset_name, mct_default_preset_name],
-    inherits_prepend: list[str] = [],
+
 ):
     retVal = {
         "name": name,
-        "inherits": inherits + inherits_prepend,
+        "inherits": inherits + append_inherits,
         "displayName": name,
         "description": f"MCT Configure Preset for {name}",
         "binaryDir": f"${{sourceDir}}/build/{name}",
-        "cacheVariables": {"VCPKG_TARGET_TRIPLET": triplet},
+        "cacheVariables": {},
     }
 
-    if config != "":
-        retVal["cacheVariables"]["CMAKE_BUILD_TYPE"] = config.capitalize()
+    if triplet != "":
+        retVal["cacheVariables"]["VCPKG_TARGET_TRIPLET"] = triplet
+    
+    if build_type != "":
+        retVal["cacheVariables"]["CMAKE_BUILD_TYPE"] = build_type.capitalize()
 
     return retVal
 
 
-def make_user_build_preset(name: str, triplet: str = ""):
+def make_user_build_preset(name: str, configurePreset: str = ""):
     return {
         "name": name,
         "displayName": name,
         "description": f"MCT Build Preset for {name}",
-        "configurePreset": triplet,
+        "configurePreset": configurePreset,
     }
 
 
-def add_user_triplet(p_dict: dict, triplet: str, config: str = ""):
-    if config == "":
+def add_user_triplet(p_dict: dict, triplet: str, build_type: str = "", create_build_preset: bool = True, verbose: bool = True):
+    if build_type == "":
         name = triplet
     else:
-        name = f"{triplet}-{config}"
+        # Finding/creating the template preset for the triplet:
+        name = f"{triplet}-{build_type}"
+        if not list_contains(lambda x: x["name"] == triplet, p_dict["configurePresets"]):
+            add_user_triplet(p_dict, triplet, "", False, False)
 
     # Adding config preset
     if list_contains(lambda x: x["name"] == name, p_dict["configurePresets"]):
-        print(f"'{name} configure preset aleady exists...'")
+        if verbose: print(f"'{name} configure preset aleady exists...'")
     else:
-        p_dict["configurePresets"].append(
-            make_user_config_preset(name, triplet, config)
-        )
+        if build_type == "":
+            p_dict["configurePresets"].append(
+                make_user_config_preset(name, triplet, build_type)
+            )
+        else:
+            p_dict["configurePresets"].append(
+                make_user_config_preset(name, "", build_type, [triplet])
+            )
 
-    # Adding build preset
-    if list_contains(lambda x: x["name"] == name, p_dict["buildPresets"]):
-        print(f"'{name} build preset aleady exists...'")
-    else:
-        p_dict["buildPresets"].append(make_user_build_preset(name, name))
+    if create_build_preset:
+        # Adding build preset
+        if list_contains(lambda x: x["name"] == name, p_dict["buildPresets"]):
+            if verbose: print(f"'{name} build preset aleady exists...'")
+        else:
+            p_dict["buildPresets"].append(make_user_build_preset(name, name))
 
 
 def construct_user_toolchain_values(verbose: bool = True):

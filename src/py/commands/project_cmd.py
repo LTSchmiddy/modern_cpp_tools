@@ -104,6 +104,13 @@ class UpdateToolchainCommand(CommandBase):
 
 
 class AddTripletCommand(CommandBase):
+    standard_build_types: list[str] = [
+        "Debug",
+        "Release",
+        "RelWithDebInfo",
+        "MinSizeRel",
+    ]
+    
     cmd: str = "add-triplet"
     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Adds presets for a vcpkg triplet"
@@ -111,10 +118,17 @@ class AddTripletCommand(CommandBase):
 
     def setup_args(self):
         self.argparser.add_argument('triplet')
-        self.argparser.add_argument(
-            '-c',
-            "--config",
+        config_group = self.argparser.add_argument_group()
+        config_group.add_argument(
+            '-b',
+            "--build_type",
             default=""
+        )
+        
+        config_group.add_argument(
+            '-a',
+            "--all_build_types",
+            action='store_true'
         )
 
     def process(self, args: argparse.Namespace):
@@ -123,7 +137,11 @@ class AddTripletCommand(CommandBase):
             user_presets = {}
             settings.load_settings(user_presets_path, user_presets)
 
-            cmake_presets.add_user_triplet(user_presets, args.triplet, args.config)
+            if args.all_build_types:
+                for i in self.standard_build_types:
+                     cmake_presets.add_user_triplet(user_presets, args.triplet, i)
+            else:
+                cmake_presets.add_user_triplet(user_presets, args.triplet, args.build_type)
 
             settings.save_settings(user_presets_path, user_presets)
         else:
