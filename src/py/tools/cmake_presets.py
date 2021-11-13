@@ -137,7 +137,7 @@ def make_user_config_preset(
         retVal["cacheVariables"]["VCPKG_TARGET_TRIPLET"] = triplet
     
     if build_type != "":
-        retVal["cacheVariables"]["CMAKE_BUILD_TYPE"] = build_type.capitalize()
+        retVal["cacheVariables"]["CMAKE_BUILD_TYPE"] = build_type
 
     return retVal
 
