@@ -120,12 +120,13 @@ def make_user_config_preset(
     build_type: str = "",
     append_inherits: list[str] = [],
     *,
+    prepend_inherits: list[str] = [],
     inherits: list[str] = [mct_default_user_preset_name, mct_default_preset_name],
 
 ):
     retVal = {
         "name": name,
-        "inherits": inherits + append_inherits,
+        "inherits": append_inherits + inherits + prepend_inherits,
         "displayName": name,
         "description": f"MCT Configure Preset for {name}",
         "binaryDir": f"${{sourceDir}}/build/{name}",
@@ -169,7 +170,7 @@ def add_user_triplet(p_dict: dict, triplet: str, build_type: str = "", create_bu
             )
         else:
             p_dict["configurePresets"].append(
-                make_user_config_preset(name, "", build_type, [triplet])
+                make_user_config_preset(name, "", build_type, inherits=[triplet])
             )
 
     if create_build_preset:
