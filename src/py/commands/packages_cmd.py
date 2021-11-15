@@ -2,6 +2,8 @@ from re import sub
 from typing import Union
 
 import sys, os, subprocess, argparse, shutil, json
+from pathlib import Path
+
 
 from util import *
 from colors import *
@@ -49,9 +51,6 @@ class InstallVcpkgCommand(CommandBase):
             else:
                 return "FATAL ERROR: vcpkg failed to install"
 
-
-
-
 class VcpkgCommand(CommandBase):
     cmd: str = "vcpkg"
     argparser: argparse.ArgumentParser = argparse.ArgumentParser(
@@ -66,6 +65,7 @@ class VcpkgCommand(CommandBase):
         vcpkg_ready, vcpkg_path = vcpkg.ready_check()
         
         if not vcpkg_ready:
+            print_error("ERROR: Vcpkg is not set up... ")
             return 1
         
         params = sys.argv[2:]      
@@ -76,6 +76,51 @@ class VcpkgCommand(CommandBase):
             return build_result
 
 
+
+class DeleteVcpkgTempsCommand(CommandBase):
+    cmd: str = "delete-vcpkg-temps"
+    argparser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Delete temporary files from vcpkg instance to free disk space."
+    )
+    def setup_args(self):
+        self.argparser.add_argument(
+            "-i",
+            "--ignore-errors",
+            action='store_true',
+            help="Do not stop on encountering an error while in deleting a file. Instead, continue with the next file."
+        )
+
+    def process(self, args: argparse.Namespace):
+        vcpkg_ready, vcpkg_path = vcpkg.ready_check()
+        
+        if not vcpkg_ready:
+            print_error("ERROR: Vcpkg is not set up... ")
+            return 1
+        
+        vcpkg_dir = Path(vcpkg_path).parent
+        
+        package_dir = vcpkg_dir.joinpath("packages")
+        buildtrees_dir = vcpkg_dir.joinpath("buildtrees")
+        downloads_dir = vcpkg_dir.joinpath("downloads")
+        
+        if package_dir.exists():
+            print(f"Deleting packages directory at '{package_dir}'")
+            shutil.rmtree(package_dir, args.ignore_errors)
+        else:
+            print("No packages directory.")
+        
+        if buildtrees_dir.exists():
+            print(f"Deleting buildtrees directory at '{buildtrees_dir}'")
+            shutil.rmtree(buildtrees_dir, args.ignore_errors)
+        else:
+            print("No buildtrees directory.")
+        
+        if downloads_dir.exists():
+            print(f"Deleting downloads directory at '{downloads_dir}'")
+            shutil.rmtree(downloads_dir, args.ignore_errors)
+        else:
+            print("No downloads directory.")
+        
 
 class UpdateVcpkgCommand(CommandBase):
     cmd: str = "update-vcpkg"
